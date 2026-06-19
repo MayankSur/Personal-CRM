@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "personal-crm"
+version = "0.1.0"
+description = "Personal relationship CRM with daily follow-up prompts"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+personal-crm = "personal_crm.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
