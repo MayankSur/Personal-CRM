@@ -1,0 +1,8 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^cd '/Users/mayank\\.surana/Documents/Personal/Personal CRM' && mkdir -p backend/src interface/src && mv src/personal_crm backend/src/ && mkdir -p interface/src/personal_crm_interface && mv backend/src/personal_crm/webapp\\.py interface/src/personal_crm_interface/webapp\\.py && mv backend/src/personal_crm/templates interface/src/personal_crm_interface/templates && mv backend/src/personal_crm/static interface/src/personal_crm_interface/static && touch interface/src/personal_crm_interface/__init__\\.py$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}

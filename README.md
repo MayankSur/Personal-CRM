@@ -24,6 +24,35 @@ source .venv/bin/activate
 pip install -e .
 ```
 
+### Launch the web UI
+
+```bash
+personal-crm-web --db data/personal_crm.db --host 127.0.0.1 --port 5050
+```
+
+If you have not installed package scripts yet, use:
+
+```bash
+chmod +x scripts/run_ui.sh
+./scripts/run_ui.sh
+```
+
+Or directly:
+
+```bash
+PYTHONPATH=backend/src:interface/src .venv/bin/python -m personal_crm_interface.webapp --db data/personal_crm.db --host 127.0.0.1 --port 5050
+```
+
+Open: `http://127.0.0.1:5050`
+
+The UI includes:
+
+- dashboard KPIs (people, messages, groups)
+- imports (contacts/linkedin/messages/whatsapp/google)
+- recommendation run panel with optional LLM enhancement
+- daily digest generation with optional WhatsApp delivery
+- people list and group assignment
+
 ### Initialize
 
 ```bash
@@ -266,5 +295,10 @@ personal-crm log-message \
 
 - This repo is local-first and keeps data in `data/personal_crm.db`.
 - Importers are resilient to partial rows and skip malformed records.
-- You can evolve scoring logic in `src/personal_crm/recommender.py`.
+- You can evolve scoring logic in `backend/src/personal_crm/recommender.py`.
 - `daily-agent` supports optional LLM prompt enhancement and optional WhatsApp delivery.
+
+## Repository structure
+
+- `backend/src/personal_crm`: backend services, data model, importers, CLI, recommendation engine
+- `interface/src/personal_crm_interface`: Flask UI, templates, and styles

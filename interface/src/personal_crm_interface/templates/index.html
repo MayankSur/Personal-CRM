@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Personal CRM Console</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body>
+    <div class="bg-shape bg-a"></div>
+    <div class="bg-shape bg-b"></div>
+    <main class="shell">
+      <header class="hero">
+        <h1>Personal CRM Console</h1>
+        <p>Import your world, prioritize outreach, and trigger your daily relationship rhythm.</p>
+      </header>
+
+      {% if status %}
+      <div class="flash success">{{ status }}</div>
+      {% endif %}
+      {% if error %}
+      <div class="flash error">{{ error }}</div>
+      {% endif %}
+
+      <section class="kpis">
+        <article>
+          <h2>{{ counts.people }}</h2>
+          <p>People</p>
+        </article>
+        <article>
+          <h2>{{ counts.messages }}</h2>
+          <p>Messages</p>
+        </article>
+        <article>
+          <h2>{{ counts.groups }}</h2>
+          <p>Groups</p>
+        </article>
+      </section>
+
+      <section class="grid two">
+        <article class="card">
+          <h3>Run Recommendations</h3>
+          <form method="post" action="/recommend/run">
+            <label>Max results</label>
+            <input type="number" name="max" value="8" min="1" max="50" />
+            <label>LLM provider (optional)</label>
+            <select name="llm_provider">
+              <option value="">No LLM</option>
+              <option value="anthropic">Anthropic (Claude)</option>
+              <option value="openai">OpenAI</option>
+            </select>
+            <label>Model (optional)</label>
+            <input type="text" name="llm_model" placeholder="claude-3-5-sonnet-latest" />
+            <label>API key (optional if env var exists)</label>
+            <input type="password" name="llm_api_key" placeholder="sk-..." />
+            <label>Owner context (optional)</label>
+            <textarea name="owner_context" rows="3" placeholder="I like short, warm, specific messages."></textarea>
+            <button type="submit">Generate Suggestions</button>
+          </form>
+        </article>
+
+        <article class="card">
+          <h3>Daily Digest + WhatsApp</h3>
+          <form method="post" action="/digest/run">
+            <label>Max results</label>
+            <input type="number" name="max" value="8" min="1" max="50" />
+            <label>Output file</label>
+            <input type="text" name="output" value="output/daily_digest.md" />
+            <label>Send digest to WhatsApp (optional)</label>
+            <input type="text" name="notify_whatsapp_to" placeholder="+15555550123" />
+            <label>WhatsApp token (optional if env var exists)</label>
+            <input type="password" name="whatsapp_token" />
+            <label>WhatsApp phone number id (optional if env var exists)</label>
+            <input type="text" name="whatsapp_phone_number_id" />
+            <button type="submit">Run Daily Agent</button>
+          </form>
+        </article>
+      </section>
+
+      <section class="grid two">
+        <article class="card">
+          <h3>Imports</h3>
+          <form method="post" action="/import/run">
+            <label>Import type</label>
+            <select name="kind">
+              <option value="contacts">Contacts CSV</option>
+              <option value="linkedin">LinkedIn CSV</option>
+              <option value="messages">Messages CSV</option>
+              <option value="whatsapp">WhatsApp TXT</option>
+              <option value="google-csv">Google Contacts CSV</option>
+              <option value="google-api">Google People API</option>
+            </select>
+            <label>File path (for non-API imports)</label>
+            <input type="text" name="path" placeholder="examples/contacts_template.csv" />
+            <label>Google access token (only for Google API)</label>
+            <input type="password" name="google_access_token" />
+            <button type="submit">Run Import</button>
+          </form>
+        </article>
+
+        <article class="card">
+          <h3>Add or Update Grouping</h3>
+          <form method="post" action="/people/add" class="stack-gap">
+            <label>Full name</label>
+            <input type="text" name="full_name" required />
+            <label>Phone</label>
+            <input type="text" name="phone" />
+            <label>Email</label>
+            <input type="email" name="email" />
+            <label>Source</label>
+            <input type="text" name="source" value="manual" />
+            <button type="submit">Add Person</button>
+          </form>
+          <hr />
+          <form method="post" action="/people/assign-group">
+            <label>Person name</label>
+            <input type="text" name="full_name" required />
+            <label>Group</label>
+            <select name="group_name">
+              {% for group in groups %}
+              <option value="{{ group.name }}">{{ group.name }} ({{ group.cadence_days }} days)</option>
+              {% endfor %}
+            </select>
+            <button type="submit">Assign Group</button>
+          </form>
+        </article>
+      </section>
+
+      <section class="card">
+        <h3>Latest Recommendations {% if latest_run %}<span class="muted">({{ latest_run }})</span>{% endif %}</h3>
+        {% if latest_recs %}
+        <div class="rec-list">
+          {% for rec in latest_recs %}
+          <article class="rec-item">
+            <h4>{{ rec.full_name }} <span>{{ rec.group_name }}</span></h4>
+            <p><strong>Why:</strong> {{ rec.reason }}</p>
+            <p><strong>Prompt:</strong> {{ rec.prompt }}</p>
+          </article>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p class="muted">No recommendations yet. Run the generator above.</p>
+        {% endif %}
+      </section>
+
+      <section class="card">
+        <h3>People Directory</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Group</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Source</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for person in people %}
+              <tr>
+                <td>{{ person.full_name }}</td>
+                <td>{{ person.group_name }}</td>
+                <td>{{ person.phone }}</td>
+                <td>{{ person.email }}</td>
+                <td>{{ person.source }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

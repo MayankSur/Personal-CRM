@@ -8,10 +8,16 @@ version = "0.1.0"
 description = "Personal relationship CRM with daily follow-up prompts"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+	"Flask>=3.0.0",
+]
 
 [project.scripts]
 personal-crm = "personal_crm.cli:main"
+personal-crm-web = "personal_crm_interface.webapp:main"
 
 [tool.setuptools.packages.find]
-where = ["src"]
+where = ["backend/src", "interface/src"]
+
+[tool.setuptools.package-data]
+personal_crm_interface = ["templates/*.html", "static/*.css"]

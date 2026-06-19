@@ -10,7 +10,7 @@ else
   PYTHON_BIN="python3"
 fi
 
-export PYTHONPATH="$ROOT_DIR/src"
+export PYTHONPATH="$ROOT_DIR/backend/src:$ROOT_DIR/interface/src"
 
 "$PYTHON_BIN" -m personal_crm.cli daily-agent --db data/personal_crm.db --max 8 --output output/daily_digest.md
 
