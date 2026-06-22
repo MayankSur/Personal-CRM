@@ -24,26 +24,65 @@ source .venv/bin/activate
 pip install -e .
 ```
 
-### Launch the web UI
+### Install dev dependencies (for hot-reload)
 
 ```bash
-personal-crm-web --db data/personal_crm.db --host 127.0.0.1 --port 5050
+pip install -e ".[dev]"
 ```
 
-If you have not installed package scripts yet, use:
+### Configure keys
+
+Create or edit `.env` in the repository root and fill your keys:
+
+```bash
+ANTHROPIC_API_KEY=
+OPENAI_API_KEY=
+WHATSAPP_ACCESS_TOKEN=
+WHATSAPP_PHONE_NUMBER_ID=
+GOOGLE_CONTACTS_ACCESS_TOKEN=
+```
+
+Run scripts auto-load `.env`.
+
+### Development mode with hot-reload
+
+For development, use the dev scripts which enable auto-reload:
+
+```bash
+# CLI with auto-restart on file changes (requires watchdog)
+./scripts/run_cli_dev.sh recommend --max 8
+
+# UI with Flask debug mode (auto-reload built-in)
+./scripts/run_ui_dev.sh
+```
+
+Make sure to install dev dependencies first:
+
+```bash
+pip install -e ".[dev]"
+```
+
+### Launch the web UI
+
+**With hot-reload (development):**
+
+```bash
+chmod +x scripts/run_ui_dev.sh
+./scripts/run_ui_dev.sh
+```
+
+Or directly with debug mode:
+
+```bash
+PYTHONPATH=backend:interface .venv/bin/python -m personal_crm_interface.webapp --db data/personal_crm.db --host 127.0.0.1 --port 5050 --debug
+```
+
+**Production mode:**
 
 ```bash
 chmod +x scripts/run_ui.sh
 ./scripts/run_ui.sh
 ```
-
-Or directly:
-
-```bash
-PYTHONPATH=backend/src:interface/src .venv/bin/python -m personal_crm_interface.webapp --db data/personal_crm.db --host 127.0.0.1 --port 5050
-```
-
-Open: `http://127.0.0.1:5050`
 
 The UI includes:
 
@@ -299,6 +338,6 @@ personal-crm log-message \
 - `daily-agent` supports optional LLM prompt enhancement and optional WhatsApp delivery.
 
 ## Repository structure
-
-- `backend/src/personal_crm`: backend services, data model, importers, CLI, recommendation engine
+personal_crm`: backend services, data model, importers, CLI, recommendation engine, and LLM integrations
+- `interfaceersonal_crm`: backend services, data model, importers, CLI, recommendation engine
 - `interface/src/personal_crm_interface`: Flask UI, templates, and styles

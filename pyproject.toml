@@ -12,12 +12,19 @@ dependencies = [
 	"Flask>=3.0.0",
 ]
 
+[project.optional-dependencies]
+dev = ["watchdog[watchmedo]>=3.0.0"]
+
 [project.scripts]
 personal-crm = "personal_crm.cli:main"
 personal-crm-web = "personal_crm_interface.webapp:main"
 
 [tool.setuptools.packages.find]
-where = ["backend/src", "interface/src"]
+where = ["backend", "interface"]
 
 [tool.setuptools.package-data]
 personal_crm_interface = ["templates/*.html", "static/*.css"]
+
+[tool.pytest.ini_options]
+python_files = ["test_*.py", "*_test.py"]
+pythonpath = ["backend", "interface"]

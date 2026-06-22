@@ -18,4 +18,9 @@ fi
 
 export PYTHONPATH="$ROOT_DIR/backend:$ROOT_DIR/interface"
 
-"$PYTHON_BIN" -m personal_crm_interface.webapp --db data/personal_crm.db --host 127.0.0.1 --port 5050 --debug
+# Use watchdog to auto-restart on file changes
+"$PYTHON_BIN" -m watchmedo auto-restart \
+  --directory=backend,interface \
+  --pattern='*.py' \
+  --recursive \
+  -- "$PYTHON_BIN" -m personal_crm.cli "$@"
